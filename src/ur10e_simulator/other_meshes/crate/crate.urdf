@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<robot name="crate">
+
+  <!-- Bottom panel -->
+  <link name="base">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.5 0.5 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="wood">
+        <color rgba="0.6 0.4 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.5 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- Left wall -->
+  <link name="side_left">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.5 0.05 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="wood"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.05 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="side_left_joint" type="fixed">
+    <parent link="base"/>
+    <child link="side_left"/>
+    <origin xyz="0 0.275 0.525" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Right wall -->
+  <link name="side_right">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.5 0.05 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="wood"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.05 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="side_right_joint" type="fixed">
+    <parent link="base"/>
+    <child link="side_right"/>
+    <origin xyz="0 -0.275 0.525" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Front wall -->
+  <link name="front">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.5 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="wood"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.5 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="front_joint" type="fixed">
+    <parent link="base"/>
+    <child link="front"/>
+    <origin xyz="0.275 0 0.525" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Back wall -->
+  <link name="back">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.5 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="wood"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.5 1.0"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="back_joint" type="fixed">
+    <parent link="base"/>
+    <child link="back"/>
+    <origin xyz="-0.275 0 0.525" rpy="0 0 0"/>
+  </joint>
+
+</robot>

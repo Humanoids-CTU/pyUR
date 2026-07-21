@@ -1,0 +1,9 @@
+*.idea*
+*__pycache__*
+*.csv
+*catkin*
+build*
+devel*
+logs*
+src/airskin-pain*
+*_build*

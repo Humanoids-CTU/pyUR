@@ -1,0 +1,4 @@
+float32 width
+float32 force
+---
+float32 setpoint
