@@ -11,18 +11,20 @@ ARG PYTHON_VER=3.8
 
 #Install all neccesary thingies
 RUN apt update -y && apt install software-properties-common -y && add-apt-repository ppa:deadsnakes/ppa -y  \
-    && apt update && apt install python$PYTHON_VER wget sudo gedit unzip apt-utils curl \
-    python$PYTHON_VER-venv nano mesa-utils curl htop net-tools sshfs python$PYTHON_VER-distutils  \
-    screen git python$PYTHON_VER-dev libpng-dev libqhull-dev libfreetype6-dev libfreetype6  \
-    pkg-config python3.8-venv python3.8-dev xvfb xdotool imagemagick  -y
-    
-#Install all pip dependencies as system packages
-RUN apt install python3-testresources -y
+    && apt update && apt install wget sudo gedit unzip apt-utils curl \
+    nano mesa-utils curl htop net-tools sshfs  \
+    screen git libpng-dev libqhull-dev libfreetype6-dev libfreetype6  \
+    pkg-config python3.8-venv python3.8-dev libssl-dev -y
 
 #Install pips
 # 3.8 is default at Ubuntu 20.04 and is fine for thing that do not work on newer versions
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VER || curl -sS https://bootstrap.pypa.io/pip/$PYTHON_VER/get-pip.py | python$PYTHON_VER
-RUN curl -sS https://bootstrap.pypa.io/pip/3.8/get-pip.py | python3.8 && python3.8 -m pip install --upgrade pip
+RUN curl -sS https://bootstrap.pypa.io/pip/3.8/get-pip.py | python3.8
+
+RUN apt install build-essential -y
+RUN cd /usr/local && wget https://www.python.org/ftp/python/$PYTHON_VER.0/Python-$PYTHON_VER.0.tgz &&  \
+    tar -xf Python-$PYTHON_VER.0.tgz && cd Python-$PYTHON_VER.0 && ./configure --enable-optimizations &&  \
+    sudo make -j$(nproc) && sudo make altinstall
+
 
 #Default args, that can be changed during build
 ARG UID=1000
@@ -46,8 +48,9 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/s
     ros-noetic-ddynamic-reconfigure* libglfw3-dev ros-noetic-effort* ros-noetic-ros-control* ros-noetic-rgbd-launch -y
 
 # Calculation libraries
-RUN python3.8 -m pip install importlib_metadata --force-reinstall
-RUN python3.8 -m pip install numpy==1.24.4 scipy colour pybullet open3d --ignore-installed --no-cache-dir
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install importlib_metadata --force-reinstall
+RUN python3 -m pip install numpy==1.24.4 pickle5 colour pybullet open3d pybullet roboticstoolbox-python --ignore-installed --no-cache-dir
     
 #Add docker user with correct UID and GID; and add him to sudoers
 RUN groupadd -g $GID docker_users && useradd -l -u $UID -G $GID -md /home/docker -s /bin/bash docker && \
@@ -64,15 +67,7 @@ RUN sudo apt install ros-noetic-trac-ik-kinematics-plugin ros-noetic-rqt-joint-t
     ros-noetic-speed-scaling-state-controller ros-noetic-ur-msgs ros-noetic-pass-through-controllers  \
     ros-noetic-ur-client-library -y && sudo rosdep init && sudo rosdep update && python3 -m pip install modbus-tk
 
-# Make sure that catkin packages build on start
-RUN echo "#!/bin/env bash\n\
-echo 'Initializing the workspace';\n\
-cd pyur/ || cd data/;\n\
-catkin config --init --extend /opt/ros/noetic;\n\
-catkin build;\n\
-clear\n\n" >> /home/docker/build && chmod +x /home/docker/build
-
-RUN python3 -m pip install pickle5 "numpy<2"
+#RUN python3 -m pip install importlib_metadata --force-reinstall
 # Export variables
 RUN echo "export PATH=$PATH:/home/docker/.local/bin" >> /home/docker/.bashrc && echo "source /home/docker/data/devel/setup.bash" >> /home/docker/.bashrc
 RUN echo "export DISABLE_ROS1_EOL_WARNINGS=true" >> /home/docker/.bashrc
