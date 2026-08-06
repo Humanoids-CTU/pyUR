@@ -166,6 +166,7 @@ class pyUR(BulletClient):
             self.last_render = time.time()
 
         self.wrench = np.zeros(6)
+        self.wrench_compensated = np.zeros(6)
         self.wrench_rot = np.array([
                             [0, 1, 0],
                             [-1, 0, 0],
@@ -177,6 +178,21 @@ class pyUR(BulletClient):
                 self.wrist_ft_sensor_joint = info[self.jointInfo["INDEX"]]
                 self.enableJointForceTorqueSensor(self.robot, self.wrist_ft_sensor_joint, enableSensor=True)
                 break
+        self.gripper_links = []
+        self.gripper_masses = []
+
+        links_to_check = [self.wrist_ft_sensor_joint]
+        while len(links_to_check) > 0:
+            parent = links_to_check.pop(0)
+            for j in range(self.getNumJoints(self.robot)):
+                info = self.getJointInfo(self.robot, j)
+                if info[self.jointInfo["PARENTINDEX"]] == parent:
+                    self.gripper_links.append(j)
+                    links_to_check.append(j)
+
+                    # Extract the mass from the URDF via getDynamicsInfo
+                    mass = self.getDynamicsInfo(self.robot, j)[self.dynamicsInfo["MASS"]]
+                    self.gripper_masses.append(mass)
 
         self.collision_during_motion = False
         self.steps_done = 0
@@ -309,8 +325,44 @@ class pyUR(BulletClient):
         return True if self._client >= 0 else False
 
     def compute_wrench(self):
-        wrench = self.getJointState(self.robot, self.wrist_ft_sensor_joint)[self.jointStates["FORCES"]]
-        self.wrench = np.ravel((self.wrench_rot @ np.reshape(wrench, (2, 3)).T).T)
+
+        sensor_state = self.getLinkState(self.robot, self.wrist_ft_sensor_joint)
+        sensor_world_pos = np.array(sensor_state[self.linkInfo["URDFPOS"]])
+        sensor_quat = sensor_state[self.linkInfo["URDFORI"]]
+
+        total_force_world = np.zeros(3)
+        total_torque_world = np.zeros(3)
+
+        # get all masses, forces and torque for gripper parts
+        for link_id, mass in zip(self.gripper_links, self.gripper_masses):
+            if mass == 0:
+                continue
+
+            link_state = self.getLinkState(self.robot, link_id)
+            com_world_pos = np.array(link_state[self.linkInfo["WORLDPOS"]])
+
+            f_g = np.array([0.0, 0.0, -mass * 9.81])
+            total_force_world += f_g
+
+            radius_vector = com_world_pos - sensor_world_pos
+            total_torque_world += np.cross(radius_vector, f_g)
+
+        rot_matrix_flat = self.getMatrixFromQuaternion(sensor_quat)
+        rot_world_to_sensor = np.array(rot_matrix_flat).reshape(3, 3).T
+
+        local_force_offset = np.dot(rot_world_to_sensor, total_force_world)
+        local_torque_offset = np.dot(rot_world_to_sensor, total_torque_world)
+
+        raw_wrench = np.array(self.getJointState(self.robot, self.wrist_ft_sensor_joint)[self.jointStates["FORCES"]])
+
+        clean_force = raw_wrench[0:3] + local_force_offset
+        clean_torque = raw_wrench[3:6] + local_torque_offset
+
+        self.wrench_compensated = np.concatenate((clean_force, clean_torque))
+        self.wrench = raw_wrench
+
+        # wrench = self.getJointState(self.robot, self.wrist_ft_sensor_joint)[self.jointStates["FORCES"]]
+        # self.wrench = wrench  # np.ravel((self.wrench_rot @ np.reshape(wrench, (2, 3)).T).T)
 
 
     def update_simulation(self, sleep_duration=0.01):

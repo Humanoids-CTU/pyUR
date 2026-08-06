@@ -1,0 +1,4 @@
+[submodule "src/cartesian_controllers"]
+	path = src/cartesian_controllers
+	url = https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers.git
+	branch = ros1

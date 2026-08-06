@@ -86,6 +86,7 @@ class BulletROS:
         self.other_objects_joints = rospy.Publisher("/bullet_ros/other_objects", OtherObjects, queue_size=1)
 
         self.wrench_pub = rospy.Publisher("/robot/wrench", WrenchStamped, queue_size=1)
+        self.wrench_compensated_pub = rospy.Publisher("/robot/wrench_compensated", WrenchStamped, queue_size=1)
         self.grip_status_pub = rospy.Publisher("/robot/ur_hardware_interface/grip_status", Bool, queue_size=0)
 
         # Initialize the controller service
@@ -286,7 +287,7 @@ class BulletROS:
         wrench = self.client.wrench
         msg = WrenchStamped()
         msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = "base_link"
+        msg.header.frame_id = "wrist_ft_sensor"
         msg.wrench.force.x = wrench[0]
         msg.wrench.force.y = wrench[1]
         msg.wrench.force.z = wrench[2]
@@ -294,6 +295,18 @@ class BulletROS:
         msg.wrench.torque.y = wrench[4]
         msg.wrench.torque.z = wrench[5]
         self.wrench_pub.publish(msg)
+
+        wrench_comp = self.client.wrench_compensated
+        msg = WrenchStamped()
+        msg.header.stamp = rospy.Time.now()
+        msg.header.frame_id = "wrist_ft_sensor"
+        msg.wrench.force.x = wrench_comp[0]
+        msg.wrench.force.y = wrench_comp[1]
+        msg.wrench.force.z = wrench_comp[2]
+        msg.wrench.torque.x = wrench_comp[3]
+        msg.wrench.torque.y = wrench_comp[4]
+        msg.wrench.torque.z = wrench_comp[5]
+        self.wrench_compensated_pub.publish(msg)
 
     def publish_grip_status(self):
         self.grip_status_pub.publish(True)

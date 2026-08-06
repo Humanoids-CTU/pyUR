@@ -45,7 +45,7 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/s
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
     apt update && apt install ros-noetic-desktop-full python3-rosdep python3-rosinstall python3-rosinstall-generator \
     python3-wstool build-essential python3-rosdep python3-catkin-tools ros-noetic-moveit* \
-    ros-noetic-ddynamic-reconfigure* libglfw3-dev ros-noetic-effort* ros-noetic-ros-control* ros-noetic-rgbd-launch -y
+    ros-noetic-ddynamic-reconfigure* libglfw3-dev ros-noetic-effort* ros-noetic-ros-control* ros-noetic-rgbd-launch ros-noetic-rqt-controller-manager -y
 
 # Calculation libraries
 RUN python3 -m pip install --upgrade pip
@@ -66,6 +66,7 @@ RUN sudo apt install ros-noetic-trac-ik-kinematics-plugin ros-noetic-rqt-joint-t
     ros-noetic-industrial-robot-status-interface ros-noetic-scaled-joint-trajectory-controller  \
     ros-noetic-speed-scaling-state-controller ros-noetic-ur-msgs ros-noetic-pass-through-controllers  \
     ros-noetic-ur-client-library -y && sudo rosdep init && sudo rosdep update && python3 -m pip install modbus-tk
+
 
 #RUN python3 -m pip install importlib_metadata --force-reinstall
 # Export variables

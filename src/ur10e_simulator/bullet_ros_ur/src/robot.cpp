@@ -66,6 +66,9 @@ BulletRobot::BulletRobot() {
         hardware_interface::JointHandle vj_handle_a(jnt_state_interface.getHandle(joint_names[j]), &vel_cmd[j]);
         vj_interface.registerHandle(vj_handle_a);
 
+        hardware_interface::JointHandle pj_handle_a(jnt_state_interface.getHandle(joint_names[j]), &cmd[j]);
+        pj_interface.registerHandle(pj_handle_a);
+
         cmd[j] = std::stod(init_pos[j]);
         pos[j] = std::stod(init_pos[j]);
         std::cout << "Joint " << joint_names[j] << " initialized to " << cmd[j] << std::endl;
@@ -76,6 +79,7 @@ BulletRobot::BulletRobot() {
     registerInterface(&jnt_state_interface);
     registerInterface(&spj_interface);
     registerInterface(&vj_interface);
+    registerInterface(&pj_interface);
 }
 
 void BulletRobot::read() {

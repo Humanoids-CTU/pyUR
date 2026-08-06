@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <bullet_ros_ur/bullet_to_ros.h>
 #include <bullet_ros_ur/ros_to_bullet.h>
+#include <hardware_interface/joint_command_interface.h>
 
 class BulletRobot : public hardware_interface::RobotHW {
 public:
@@ -30,6 +31,7 @@ private:
     hardware_interface::JointStateInterface jnt_state_interface;
     scaled_controllers::ScaledPositionJointInterface spj_interface;
     hardware_interface::VelocityJointInterface vj_interface;
+    hardware_interface::PositionJointInterface pj_interface;
 
     std::vector<double> vel_cmd, cmd, pos, vel, eff;
 

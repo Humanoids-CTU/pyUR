@@ -14,7 +14,7 @@ This folder contains necessary files to run the simulation of the UR10e robot wi
   - clone this repository
 
         cd SOME_PATH
-        git clone <THIS_REPOSITORY_URL> pyur_ws
+        git clone --recursive https://github.com/Humanoids-CTU/pyUR.git pyur_ws
 
   - use Docker (see [Docker Installation](#docker-installation)) or install ROS Noetic (+ required libraries from
     [Dockerfile](Docker/Dockerfile)) and Python 3.8 (with `pybullet`, `open3d`, and their dependencies)
@@ -90,6 +90,13 @@ The simulator can be run in two mode:
    - the default is `ScaledJointTrajectoryController`. You need to switch with rosservice `/controller_manager/switch_controller`
      before running joint commands
      - see [examples.py](src/ur10e_simulator/bullet_ros_ur/scripts/examples.py) for an example
+ - the simulator also provides Cartesian controllers (motion, force, compliance) from the
+   [cartesian_controllers](https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers) package
+   - see [examples.py](src/ur10e_simulator/bullet_ros_ur/scripts/examples.py) for examples of:
+    - controlling the robot by publishing a target pose to `/robot/target_frame` (`CartesianMotionController`)
+    - commanding a target wrench to `/robot/target_wrench` (`CartesianForceController`)
+    - combining pose and wrench targets (`CartesianComplianceController`)
+    - using the interactive RViz marker (`motion_control_handle`) for drag-and-drop Cartesian control
 
 ### Non-ROS version
   - install necessary things
