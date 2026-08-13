@@ -1,15 +1,20 @@
 <launch>
     <arg name="rviz" default="true"/>
-    <arg name="sim_config" default="ros.yaml"/>
+    <arg name="gripper" default="true"/>
 
-    <param name="gripper" value="true"/>
+
+    <arg name="sim_config" default="$(eval 'ros_no_gripper.yaml' if str(arg('gripper')).lower() == 'false' else 'ros.yaml' if str(arg('gripper')).lower() == 'true' else 'ros_' + str(arg('gripper')) + '.yaml')" />
+    <param name="gripper" value="$(arg gripper)"/>
     <param name="/bullet_ros/joint_names" value=""/>
     <param name="/bullet_ros/init_pos" value=""/>
 
-    <param name="robot_description" textfile="$(find bullet_ros_ur)/urdf/ur10e.urdf"/>
+    <param name="max_grip_width" value="$(eval 150 if str(arg('gripper')).lower() in ['true', 'false', 'rg6', '1', '0', ''] else 1)" />
+
+    <arg name="urdf_file" value="$(eval 'ur10e.urdf' if str(arg('gripper')).lower() == 'false' else 'ur10e_rg6.urdf' if str(arg('gripper')).lower() == 'true' else 'ur10e_' + str(arg('gripper')).lower() + '.urdf')" />
+    <param name="robot_description" textfile="$(find bullet_ros_ur)/urdf/$(arg urdf_file)"/>
 
     <include file="$(find ur10e_moveit_config)/launch/moveit_planning_execution.launch">
-        <arg name="gripper" value="true"/>
+        <arg name="gripper" value="$(arg gripper)"/>
     </include>
 
     <!-- Launch RVIZ -->
@@ -45,7 +50,7 @@
     </group>
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
-    <node name="finger_tf_broadcaster" pkg="bullet_ros_ur" type="rg_finger_publisher.py" output="screen" />
+    <node if="$(eval str(arg('gripper')).lower() in ['true', 'false', 'rg6', '1'])" name="finger_tf_broadcaster" pkg="bullet_ros_ur" type="rg_finger_publisher.py" output="screen" />
     <node name="pyUR" pkg="bullet_ros_ur" type="main.py" output="screen" args="config=$(arg sim_config)"/>
 
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="true" output="screen">

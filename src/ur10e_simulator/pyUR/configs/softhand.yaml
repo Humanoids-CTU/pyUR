@@ -8,7 +8,7 @@ vhacd: # global vhacd
   force_vhacd_urdf: True # whether to force creation of URDF with paths changed to VHACD meshes if it are already exists
                          # default: True
                          # False, True
-robot_urdf_path: "../../../UR10e_meshes/ur10e_rg6.urdf" # path to Robot URDF file relative to pyur.py
+robot_urdf_path: "../../../UR10e_meshes/ur10e_softhand.urdf" # path to Robot URDF file relative to pyur.py
                                # default: "../iCub/full.urdf"
                                # str
 gui: True # whether to sho GUI
@@ -24,10 +24,10 @@ initial_joint_angles: {"shoulder_lift_joint": -90, "elbow_joint": 90, "shoulder_
 #initial_joint_angles: {"shoulder_lift_joint": -90}
 show_collision: True
 urdfs: # other than robot urdfs or .obj files
-  paths: [ball/ball.obj] # path to files relative "other_meshes" directory
-  positions: [[-0.15, 0.75, 1]] # position of the mesh/urdf base link in the world frame
-  fixed: [False] # whether the mesh/urdf can move in space
-  color: [[1, 1, 0]] # color on RGB format (0-1)
+  paths: [] # path to files relative "other_meshes" directory
+  positions: [] # position of the mesh/urdf base link in the world frame
+  fixed: [] # whether the mesh/urdf can move in space
+  color: [] # color on RGB format (0-1)
 skin: # skin settings
   use: True # whether to show and simulate skin
               # default: False

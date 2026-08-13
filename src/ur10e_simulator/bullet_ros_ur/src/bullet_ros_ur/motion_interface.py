@@ -71,6 +71,7 @@ class MoveGroupPythonInterface(object):
         self.gripper_service = rospy.ServiceProxy("/robot/ur_hardware_interface/grip", grip)
         self.group.set_max_velocity_scaling_factor(1)
         self.group.set_max_acceleration_scaling_factor(1)
+        self.max_width = rospy.get_param("/max_grip_width", 150)
 
     def apply_planning_scene(self, scene_msg):
         return self.scene._psi.apply_planning_scene(msg_to_string(scene_msg))
@@ -168,7 +169,7 @@ class MoveGroupPythonInterface(object):
         return self.group.go(wait=wait)
 
     def open_gripper(self):
-        self.gripper_service.call(gripRequest(150, 180))
+        self.gripper_service.call(gripRequest(self.max_width, 180))
 
     def close_gripper(self):
         self.gripper_service.call(gripRequest(0, 180))

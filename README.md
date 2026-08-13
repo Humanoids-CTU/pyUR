@@ -77,6 +77,11 @@ The simulator can be run in two mode:
     - in the terminal, run
 
           roslaunch bullet_ros_ur simulation.launch
+      - you can specify parameter  `gripper:=` with values:  
+        - false - no gripper,
+        - true - RG6 gripper (this for backwards compatibility with frameworks specifying only true/false)
+        - rg6 - RG gripper
+        - softhand - QB SoftHand gripper
     - this will start the simulator and RVIZ with the robot
 #### Control the robot
  - to test the connection etc. you can just move the robot in RVIZ and plan

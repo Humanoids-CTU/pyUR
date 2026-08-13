@@ -8,7 +8,7 @@ vhacd: # global vhacd
   force_vhacd_urdf: True # whether to force creation of URDF with paths changed to VHACD meshes if it are already exists
                          # default: True
                          # False, True
-robot_urdf_path: "../../../UR10e_meshes/ur10e_rg6.urdf" # path to Robot URDF file relative to pyur.py
+robot_urdf_path: "../../../UR10e_meshes/ur10e.urdf" # path to Robot URDF file relative to pyur.py
                                # default: "../iCub/full.urdf"
                                # str
 gui: True # whether to sho GUI

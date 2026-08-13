@@ -21,7 +21,10 @@ class BulletROS:
     def __init__(self, config):
         rospy.init_node("pyUR")
         self.client = pyUR(config=config)
+        self.gripper = "rg6" in self.client.config.robot_urdf_path or "softhand" in self.client.config.robot_urdf_path
+
         self.R_URDFs = {}
+
         # UR10e joint names in the correct order
         joints = "shoulder_pan_joint;shoulder_lift_joint;elbow_joint;wrist_1_joint;wrist_2_joint;wrist_3_joint"
 
@@ -39,9 +42,15 @@ class BulletROS:
         self.msg.efforts = [0] * len(self.joint_ids)
 
         # Initialize the grip service
-        self.grip_service = rospy.Service("/robot/ur_hardware_interface/grip", grip, self.grip)
-        self.MAX_WIDTH = 150
-        self.MAX_FORCE = 180
+        if self.gripper:
+            if "softhand" in self.client.config.robot_urdf_path:
+                self.grip_service = rospy.Service("/robot/ur_hardware_interface/grip", grip, self.grip)
+                self.MAX_WIDTH = 1
+                self.MAX_FORCE = -1
+            else:
+                self.grip_service = rospy.Service("/robot/ur_hardware_interface/grip", grip, self.grip)
+                self.MAX_WIDTH = 150
+                self.MAX_FORCE = 180
 
         self.obj_collision_service = rospy.Service("/bullet_ros/change_obj_col", SetBool, self.change_obj_collision)
 
@@ -63,9 +72,10 @@ class BulletROS:
         self.move_type = 0  # 0 - position, 1 - velocity
 
         # Initialize the finger joint state
-        self.finger_js = JointState()
-        self.finger_js.header = Header()
-        self.finger_js.name = ["finger_joint"]
+        if self.gripper:
+            self.finger_js = JointState()
+            self.finger_js.header = Header()
+            self.finger_js.name = [self.client.gripper.control_joint_name]
 
         # Initialize the joint state publisher for finger joint
         self.js_pub = rospy.Publisher("/finger/joint_states", JointState, queue_size=1)
@@ -266,7 +276,8 @@ class BulletROS:
         self.move()
         self.client.update_simulation(None)
         self.read_state()
-        self.send_finger_joint()
+        if self.gripper:
+            self.send_finger_joint()
         self.activate_airskin()
         if self.client.config.skin.use and rospy.get_time() - self.last_skin_time > self.client.config.skin.period:
             self.send_skin()
@@ -430,8 +441,8 @@ class BulletROS:
         :return:
         :rtype:
         """
-        noise = np.random.uniform(-1, 1, 11)
-        for pad in range(11):
+        noise = np.random.uniform(-1, 1, len(self.client.activated_skin))
+        for pad in range(len(self.client.activated_skin)):
             # if self.client.activated_skin[self.client.sorted_skin_links[pad]] != 0:
             #     self.airskin_msg.pressures[pad] = self.client.activated_skin[self.client.sorted_skin_links[pad]] + noise[pad]
             # elif self.client.activated_skin[self.client.sorted_skin_links[pad]] == 0 and self.airskin_msg.pressures[pad] != 0:
@@ -508,17 +519,14 @@ class BulletROS:
             out.success = False
             return out
 
-        if not (0 < request.force <= self.MAX_FORCE):
+        if self.MAX_FORCE != -1 and not (0 < request.force <= self.MAX_FORCE):
             rospy.logerr("Force must be between 0-180")
             out = gripResponse()
             out.success = False
             return out
+        if self.MAX_FORCE == -1:
+            request.force = 180
 
-        vel_min = 0
-        vel_max = 2
-
-        # Calculate the velocity based on the force
-        #velocity = ((request.force - 0) / (90 - 0)) * (vel_max - vel_min) + vel_min
         velocity = 0.5
 
         cur_state = self.client.getJointState(self.client.robot, self.client.gripper.finger_joint_id)[self.client.jointStates["POSITION"]]
@@ -544,9 +552,9 @@ class BulletROS:
                         if c[self.client.contactPoints["FORCE"]] > 2.5:
                             touch_counter += 1
                             break
-                if touch_counter == 2:
+                if touch_counter >= 2:
                     rospy.logwarn("Gripper touched the object, stopping it")
-                    self.client.stop_robot(["finger_joint"])
+                    self.client.stop_robot([self.client.gripper.control_joint_name])
                     break
 
             info = self.client.getJointState(self.client.robot, self.client.gripper.finger_joint_id)
@@ -555,11 +563,11 @@ class BulletROS:
             #     self.client.stop_robot(["finger_joint"])
             #     break
             if np.abs(info[self.client.jointStates["POSITION"]] - self.client.gripper.joint_ref.set_point) <= self.client.joint_tolerance:
-                self.client.stop_robot(["finger_joint"])
+                self.client.stop_robot([self.client.gripper.control_joint_name])
                 break
             if last_refs[0] != -99 and np.allclose(last_refs, info[self.client.jointStates["POSITION"]], atol=0.001):
                 rospy.logwarn("Gripper is not moving, stopping it")
-                self.client.stop_robot(["finger_joint"])
+                self.client.stop_robot([self.client.gripper.control_joint_name])
                 break
 
             last_refs[ref_id] = info[self.client.jointStates["POSITION"]]

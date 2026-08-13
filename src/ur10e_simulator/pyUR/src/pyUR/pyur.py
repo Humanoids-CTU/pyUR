@@ -7,11 +7,11 @@ import os
 
 try: # ROS version
     from pyUR.visualizer import Visualizer
-    from pyUR.gripper import RG6
+    from pyUR.gripper import RG6, Softhand
     from pyUR.utils import Config, URDF, Pose, CustomFormatter
 except ImportError: # Non-ROS version
     from visualizer import Visualizer
-    from gripper import RG6
+    from gripper import RG6, Softhand
     from utils import Config, URDF, Pose, CustomFormatter
 
 import open3d as o3d
@@ -57,6 +57,7 @@ class pyUR(BulletClient):
         except KeyError:
             self.parent_name = "main.py" # ROS variant
         self.file_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = config
         self.config = Config(os.path.join(self.file_dir, "../../configs", config))
         self.config.simulation_step = 1/self.config.simulation_step
         self.setTimeStep(self.config.simulation_step)
@@ -178,6 +179,7 @@ class pyUR(BulletClient):
                 self.wrist_ft_sensor_joint = info[self.jointInfo["INDEX"]]
                 self.enableJointForceTorqueSensor(self.robot, self.wrist_ft_sensor_joint, enableSensor=True)
                 break
+
         self.gripper_links = []
         self.gripper_masses = []
 
@@ -197,8 +199,13 @@ class pyUR(BulletClient):
         self.collision_during_motion = False
         self.steps_done = 0
         self.skins_done = 0
-        self.gripper = RG6(self)
-        self.gripper.set_gripper_pose(150, wait=True)
+        if "rg6" in self.config.robot_urdf_path or "softhand" in self.config.robot_urdf_path:
+            if "rg6" in self.config.robot_urdf_path:
+                self.gripper = RG6(self)
+            elif "softhand" in self.config.robot_urdf_path:
+                self.gripper = Softhand(self)
+        else:
+            self.gripper = None
 
         self.toggle_gravity()
 
@@ -247,6 +254,15 @@ class pyUR(BulletClient):
         # to disable checks for them
         for c in self_collisions:
             self.setCollisionFilterPair(robot, robot, c[3], c[4], False)
+
+
+        if "softhand" in self.config.robot_urdf_path:
+            for link in links:
+                if "qbhand_" in link.name:
+                    for link_1 in links:
+                        if "qbhand_" in link_1.name:
+                            self.setCollisionFilterPair(robot, robot, link.robot_link_id, link_1.robot_link_id, False)
+
 
         for link in links:
             if link.name == "table1":
@@ -375,6 +391,33 @@ class pyUR(BulletClient):
 
         # This is here to keep events and everything in open3D work even if we want slower simulation
         if sleep_duration is None or time.time()-self.last_step > sleep_duration:
+
+            # # Gears does not work with the softhand, so we need to compute the joint positions manually
+            if "softhand" in self.config.robot_urdf_path:
+                synergy_state = self.get_joint_state(self.gripper.control_joint_name)
+                synergy_pos = synergy_state[0]
+
+                for joint_order_id, joint_idx in enumerate(self.gripper.joints_ids):
+
+                    current_joint_name = self.gripper.JOINTS[joint_order_id]
+                    total_multiplier = 1.0
+
+                    while current_joint_name != self.gripper.control_joint_name:
+                        idx = self.gripper.JOINTS.index(current_joint_name)
+
+                        total_multiplier *= self.gripper.SIGNS[idx]
+
+                        current_joint_name = self.gripper.MIMIC_JOINTS[idx]
+
+                    target_pos = synergy_pos * total_multiplier
+                    self.setJointMotorControl2(
+                        bodyIndex=self.robot,
+                        jointIndex=joint_idx,
+                        controlMode=self.POSITION_CONTROL,
+                        targetPosition=target_pos,
+                        force=1
+                    )
+
             self.stepSimulation()
             self.last_step = time.time()
             self.steps_done += 1

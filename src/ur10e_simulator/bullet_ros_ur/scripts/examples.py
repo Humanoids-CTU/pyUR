@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     MoveGroupArm = MoveGroupPythonInterface("manipulator")
 
-    """
+    """ 
     Just info message
     """
     rospy.loginfo("Starting ")
@@ -65,14 +65,14 @@ if __name__ == "__main__":
     MoveGroupArm.close_gripper()
 
     """
-    The previous command corresponds to calling /ur_hardware_interface/grip service with width 150mm and force 120N
-    for opening and 0mm and 120N for closing
-    The service also support other widths (0-150) and forces (0-120).
+    The previous command corresponds to calling /ur_hardware_interface/grip service with width max width and force 180N
+    for opening and min width and 180N for closing
+    The service also support other widths (0-150 for RG6 and 0-1 for Softhand) and forces (0-180 - for RG6 only).
     To call it
     """
     grip_service = rospy.ServiceProxy("/robot/ur_hardware_interface/grip", grip)
     request = gripRequest()
-    request.width = 100
+    request.width = rospy.get_param("/max_grip_width", 150)/2
     request.force = 30
 
     rospy.loginfo(f"Gripper moved successfully: {grip_service.call(request)}")
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     ik = InverseKinematics()
 
-    result = ik.getIK(group_name="manipulator", ik_link_name="gripper_link", pose=ps, avoid_collisions=True, timeout=0.1)
+    result = ik.getIK(group_name="manipulator", ik_link_name=MoveGroupArm.eef_link, pose=ps, avoid_collisions=True, timeout=0.1)
     rospy.loginfo(f"The IK solution is: {result}")
 
     """VELOCITY CONTROL"""

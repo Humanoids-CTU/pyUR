@@ -1,49 +1,109 @@
-<?xml version="1.0" ?>
-<!--This does not replace URDF, and is not an extension of URDF.
-    This is a format for representing semantic information about the robot structure.
-    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
--->
+<?xml version="1.0" encoding="UTF-8"?>
 <robot name="ur10e_robot">
-    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
-    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
-    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
-    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
-    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
-    <group name="arm">
-        <chain base_link="base_link" tip_link="tool0" />
+
+    <!-- GROUPS: Representation of a set of joints and links. -->
+    <group name="manipulator">
+        <chain base_link="base_link" tip_link="qbhand_end_effector_link" />
     </group>
 
-    <group name="manipulator">
-        <chain base_link="base_link" tip_link="tool0" />
+    <group name="qbhand_gripper">
+        <link name="qbhand_base_link" />
+        <link name="qbhand_palm_link" />
+        <!-- Thumb -->
+        <link name="qbhand_thumb_knuckle_link" />
+        <link name="qbhand_thumb_proximal_link" />
+        <link name="qbhand_thumb_distal_link" />
+        <!-- Index -->
+        <link name="qbhand_index_knuckle_link" />
+        <link name="qbhand_index_proximal_link" />
+        <link name="qbhand_index_middle_link" />
+        <link name="qbhand_index_distal_link" />
+        <!-- Middle -->
+        <link name="qbhand_middle_knuckle_link" />
+        <link name="qbhand_middle_proximal_link" />
+        <link name="qbhand_middle_middle_link" />
+        <link name="qbhand_middle_distal_link" />
+        <!-- Ring -->
+        <link name="qbhand_ring_knuckle_link" />
+        <link name="qbhand_ring_proximal_link" />
+        <link name="qbhand_ring_middle_link" />
+        <link name="qbhand_ring_distal_link" />
+        <!-- Little -->
+        <link name="qbhand_little_knuckle_link" />
+        <link name="qbhand_little_proximal_link" />
+        <link name="qbhand_little_middle_link" />
+        <link name="qbhand_little_distal_link" />
+
+        <joint name="qbhand_synergy_joint" />
     </group>
-<!--    GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
-    <group_state name="zero" group="manipulator">
-        <joint name="elbow_joint" value="0" />
-        <joint name="shoulder_lift_joint" value="0" />
-        <joint name="shoulder_pan_joint" value="0" />
-        <joint name="wrist_1_joint" value="0" />
-        <joint name="wrist_2_joint" value="0" />
-        <joint name="wrist_3_joint" value="0" />
-    </group_state>
+
+    <!-- GROUP STATES -->
     <group_state name="home" group="manipulator">
-        <joint name="elbow_joint" value="1.57" />
-        <joint name="shoulder_lift_joint" value="-1.57" />
-        <joint name="shoulder_pan_joint" value="1.57" />
-        <joint name="wrist_1_joint" value="0" />
-        <joint name="wrist_2_joint" value="1.57" />
-        <joint name="wrist_3_joint" value="0" />
-    </group_state>
-    <group_state name="up" group="manipulator">
-        <joint name="elbow_joint" value="0" />
-        <joint name="shoulder_lift_joint" value="-1.5707" />
         <joint name="shoulder_pan_joint" value="0" />
-        <joint name="wrist_1_joint" value="-1.5707" />
-        <joint name="wrist_2_joint" value="0" />
+        <joint name="shoulder_lift_joint" value="-1.5708" />
+        <joint name="elbow_joint" value="1.5708" />
+        <joint name="wrist_1_joint" value="-1.5708" />
+        <joint name="wrist_2_joint" value="-1.5708" />
         <joint name="wrist_3_joint" value="0" />
     </group_state>
-    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="fixed_base" type="fixed" parent_frame="world" child_link="base_link" />
-    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+
+
+    <!-- END EFFECTOR -->
+    <end_effector name="qbhand_ee" parent_link="wrist_3_link" group="qbhand_gripper" parent_group="manipulator" />
+
+    <!-- PASSIVE JOINTS -->
+    <!-- Define the mimicked phalanx joints as passive so MoveIt ignores them for direct planning -->
+    <passive_joint name="qbhand_thumb_knuckle_joint" />
+    <passive_joint name="qbhand_thumb_proximal_joint" />
+    <passive_joint name="qbhand_thumb_distal_joint" />
+    <passive_joint name="qbhand_index_knuckle_joint" />
+    <passive_joint name="qbhand_index_proximal_joint" />
+    <passive_joint name="qbhand_index_middle_joint" />
+    <passive_joint name="qbhand_index_distal_joint" />
+    <!-- (Add the rest of the passive finger joints here for middle, ring, and little) -->
+
+    <!-- DISABLE COLLISIONS -->
+    <!-- By default, adjacent links are constantly colliding in collision checking. We must disable them. -->
+
+    <!-- 1. Disable collisions between the robot wrist and the qbhand base -->
+    <disable_collisions link1="wrist_3_link" link2="qbhand_base_link" reason="Adjacent" />
+    <disable_collisions link1="wrist_2_link" link2="qbhand_base_link" reason="Never" />
+    <disable_collisions link1="wrist_3_link" link2="qbhand_palm_link" reason="Default" />
+
+    <!-- 2. Disable internal qbhand base/palm collisions -->
+    <disable_collisions link1="qbhand_base_link" link2="qbhand_palm_link" reason="Adjacent" />
+
+    <!-- 3. Disable adjacent phalanx collisions for all fingers -->
+    <!-- Thumb -->
+    <disable_collisions link1="qbhand_palm_link" link2="qbhand_thumb_knuckle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_thumb_knuckle_link" link2="qbhand_thumb_proximal_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_thumb_proximal_link" link2="qbhand_thumb_distal_link" reason="Adjacent" />
+
+    <!-- Index -->
+    <disable_collisions link1="qbhand_palm_link" link2="qbhand_index_knuckle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_index_knuckle_link" link2="qbhand_index_proximal_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_index_proximal_link" link2="qbhand_index_middle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_index_middle_link" link2="qbhand_index_distal_link" reason="Adjacent" />
+
+    <!-- Middle -->
+    <disable_collisions link1="qbhand_palm_link" link2="qbhand_middle_knuckle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_middle_knuckle_link" link2="qbhand_middle_proximal_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_middle_proximal_link" link2="qbhand_middle_middle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_middle_middle_link" link2="qbhand_middle_distal_link" reason="Adjacent" />
+
+    <!-- Ring -->
+    <disable_collisions link1="qbhand_palm_link" link2="qbhand_ring_knuckle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_ring_knuckle_link" link2="qbhand_ring_proximal_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_ring_proximal_link" link2="qbhand_ring_middle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_ring_middle_link" link2="qbhand_ring_distal_link" reason="Adjacent" />
+
+    <!-- Little -->
+    <disable_collisions link1="qbhand_palm_link" link2="qbhand_little_knuckle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_little_knuckle_link" link2="qbhand_little_proximal_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_little_proximal_link" link2="qbhand_little_middle_link" reason="Adjacent" />
+    <disable_collisions link1="qbhand_little_middle_link" link2="qbhand_little_distal_link" reason="Adjacent" />
+
+    <!-- 4. Prevent UR Arm links from reporting false collisions with themselves -->
     <disable_collisions link1="base_link_inertia" link2="shoulder_link" reason="Adjacent" />
     <disable_collisions link1="base_link_inertia" link2="upper_arm_link" reason="Never" />
     <disable_collisions link1="base_link_inertia" link2="wrist_1_link" reason="Never" />
@@ -55,10 +115,8 @@
     <disable_collisions link1="wrist_1_link" link2="wrist_2_link" reason="Adjacent" />
     <disable_collisions link1="wrist_1_link" link2="wrist_3_link" reason="Never" />
     <disable_collisions link1="wrist_2_link" link2="wrist_3_link" reason="Adjacent" />
-    <!-- Gripper -->
 
-    <!-- Airskin -->
-    <disable_collisions link1="airskin_0" link2="base_link_inertia" reason="Never" />
+        <disable_collisions link1="airskin_0" link2="base_link_inertia" reason="Never" />
     <disable_collisions link1="airskin_1" link2="base_link_inertia" reason="Never" />
     <disable_collisions link1="airskin_2" link2="base_link_inertia" reason="Never" />
     <disable_collisions link1="airskin_3" link2="base_link_inertia" reason="Never" />
@@ -146,10 +204,4 @@
     <disable_collisions link1="airskin_8" link2="wrist_3_link" reason="Never" />
     <disable_collisions link1="airskin_9" link2="wrist_3_link" reason="Never" />
 
-
-
-
-
-    <!-- Table -->
-    <disable_collisions link1="table1" link2="base_link" reason="Adjancent" />
 </robot>
