@@ -669,7 +669,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="1.571" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="2.542"/>
   </joint>
 
   <link name="qbhand_thumb_knuckle_link">
@@ -699,7 +698,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_thumb_proximal_virtual_link">
@@ -716,7 +714,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_thumb_proximal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_thumb_proximal_link">
@@ -746,7 +743,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_thumb_distal_virtual_link">
@@ -763,7 +759,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_thumb_distal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_thumb_distal_link">
@@ -793,7 +788,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="-0.524" upper="0.524" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="-0.2"/>
   </joint>
 
   <link name="qbhand_index_knuckle_link">
@@ -823,7 +817,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_index_proximal_virtual_link">
@@ -840,7 +833,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_index_proximal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_index_proximal_link">
@@ -870,7 +862,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_index_middle_virtual_link">
@@ -887,7 +878,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_index_middle_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_index_middle_link">
@@ -917,7 +907,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_index_distal_virtual_link">
@@ -934,7 +923,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_index_distal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_index_distal_link">
@@ -964,7 +952,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="-0.524" upper="0.524" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.0"/>
   </joint>
 
   <link name="qbhand_middle_knuckle_link">
@@ -994,7 +981,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_middle_proximal_virtual_link">
@@ -1011,7 +997,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_middle_proximal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_middle_proximal_link">
@@ -1041,7 +1026,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_middle_middle_virtual_link">
@@ -1058,7 +1042,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_middle_middle_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_middle_middle_link">
@@ -1088,7 +1071,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_middle_distal_virtual_link">
@@ -1105,7 +1087,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_middle_distal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_middle_distal_link">
@@ -1135,7 +1116,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="-0.524" upper="0.524" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.2"/>
   </joint>
 
   <link name="qbhand_ring_knuckle_link">
@@ -1165,7 +1145,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_ring_proximal_virtual_link">
@@ -1182,7 +1161,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_ring_proximal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_ring_proximal_link">
@@ -1212,7 +1190,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_ring_middle_virtual_link">
@@ -1229,7 +1206,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_ring_middle_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_ring_middle_link">
@@ -1259,7 +1235,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_ring_distal_virtual_link">
@@ -1276,7 +1251,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_ring_distal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_ring_distal_link">
@@ -1306,7 +1280,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="-0.524" upper="0.524" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.4"/>
   </joint>
 
   <link name="qbhand_little_knuckle_link">
@@ -1336,7 +1309,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_little_proximal_virtual_link">
@@ -1353,7 +1325,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_little_proximal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_little_proximal_link">
@@ -1383,7 +1354,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_little_middle_virtual_link">
@@ -1400,7 +1370,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_little_middle_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_little_middle_link">
@@ -1430,7 +1399,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_synergy_joint" multiplier="0.785"/>
   </joint>
 
   <link name="qbhand_little_distal_virtual_link">
@@ -1447,7 +1415,6 @@
     <axis xyz="0 0 -1"/>
     <dynamics damping="0.0" friction="0.0"/>
     <limit effort="100" lower="0.0" upper="0.785" velocity="100"/>
-    <mimic joint="qbhand_little_distal_joint" multiplier="1.0"/>
   </joint>
 
   <link name="qbhand_little_distal_link">

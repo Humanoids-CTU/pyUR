@@ -73,9 +73,14 @@ class BulletROS:
 
         # Initialize the finger joint state
         if self.gripper:
-            self.finger_js = JointState()
-            self.finger_js.header = Header()
-            self.finger_js.name = [self.client.gripper.control_joint_name]
+            if "softhand" in self.client.config.robot_urdf_path:
+                self.finger_js = JointState()
+                self.finger_js.header = Header()
+                self.finger_js.name = ["qbhand_synergy_joint"] + [_ for _ in self.client.gripper.JOINTS]
+            else:
+                self.finger_js = JointState()
+                self.finger_js.header = Header()
+                self.finger_js.name = [self.client.gripper.control_joint_name]
 
         # Initialize the joint state publisher for finger joint
         self.js_pub = rospy.Publisher("/finger/joint_states", JointState, queue_size=1)
@@ -470,11 +475,19 @@ class BulletROS:
         :return:
         :rtype:
         """
-        state = self.client.getJointState(self.client.robot, self.client.gripper.finger_joint_id)
-        self.finger_js.header.stamp = rospy.Time.now()
-        self.finger_js.position = [state[0]]
-        self.finger_js.velocity = [state[1]]
-        self.finger_js.effort = [state[3]]
+        if "softhand" not in self.client.config.robot_urdf_path:
+            state = self.client.getJointState(self.client.robot, self.client.gripper.finger_joint_id)
+            self.finger_js.header.stamp = rospy.Time.now()
+            self.finger_js.position = [state[0]]
+            self.finger_js.velocity = [state[1]]
+            self.finger_js.effort = [state[3]]
+        else:
+            state = self.client.getJointStates(self.client.robot, [self.client.gripper.finger_joint_id] + self.client.gripper.joints_ids)
+            self.finger_js.header.stamp = rospy.Time.now()
+            self.finger_js.position = [s[0] for s in state]
+            self.finger_js.velocity = [s[1] for s in state]
+            self.finger_js.effort = [s[3]*1e14 for s in state] # scale so it is simlar to the real world
+
         self.js_pub.publish(self.finger_js)
 
     def move(self):
